@@ -1,4 +1,5 @@
 <?php
+//测试案例
 header("Content-type:text/html;charset=utf-8");
 require 'vendor/autoload.php';
 use QL\QueryList;
