@@ -1,0 +1,63 @@
+<!doctype html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="initial-scale=1.0, user-scalable=no, width=device-width">
+    <title>基本地图展示</title>
+    <link rel="stylesheet" href="http://cache.amap.com/lbs/static/main1119.css"/>
+    <script src="http://cache.amap.com/lbs/static/es5.min.js"></script>
+    <script src="http://webapi.amap.com/maps?v=1.4.0&key=536cfcee6548c8c741feb7c142331a3c&plugin=AMap.ArrivalRange,AMap.Scale,AMap.Geocoder,AMap.Transfer,AMap.Autocomplete"></script>
+    <script type="text/javascript" src="http://cache.amap.com/lbs/static/addToolbar.js"></script>
+    <script src="https://cdn.bootcss.com/jquery/3.2.1/jquery.min.js"></script>
+    <link rel="stylesheet" href="/skin/css/map.css">
+
+
+    <!-- UI 组件库 -->
+    <script src="//webapi.amap.com/ui/1.0/main.js?v=1.0.11"></script>
+    <link rel="stylesheet" href="http://webapi.amap.com/ui/1.0/ui/misc/MarkerList/examples/common.css">
+</head>
+<body>
+
+<div id="container"></div>
+
+<div id="panel">
+    <div id="intro">
+        <h3>render(data)</h3>
+    </div>
+    <ul id="houseList"></ul>
+</div>
+
+<div class="control-panel">
+    <div class="control-entry">
+        <label>工作地点：</label>
+        <div class="control-input">
+            <input id="work-location" type="text" value="数字娱乐产业园">
+            <input type="button" value="一键定位">
+        </div>
+    </div>
+    <div class="control-entry">
+        <label>通勤方式：</label>
+        <div class="control-input">
+            <input type="radio" name="takeType" value="SUBWAY,BUS" onClick="takeBus(this)" checked/> 公交+地铁
+            <input type="radio" name="takeType" value="BUS" onClick="takeBus(this)"/> 公交
+            <input type="radio" name="takeType" value="SUBWAY" onClick="takeBus(this)" /> 地铁
+        </div>
+    </div>
+    <div class="control-entry">
+        <label>通勤时间：</label>
+        <div class="control-input">
+            <input id="takeTime" type="number" value="40">
+        </div>
+    </div>
+    <div class="control-entry">
+        <label>自定义操作：</label>
+        <div class="control-input">
+            <input type="button" class="button" value="显示/隐藏实时路况" onclick="toggleTraffic();"/>
+            <input type="button" value="清空" onclick="clearMap();">
+        </div>
+    </div>
+</div>
+<script src="/skin/js/map.js"></script>
+</body>
+</html>

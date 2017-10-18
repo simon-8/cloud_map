@@ -1,0 +1,39 @@
+.control-panel {
+    position: absolute;
+    width: 380px;
+    top: 30px;
+    right: 20px;
+    background-color: rgba(119, 136, 153, 0.8);
+}
+
+.control-entry {
+    width: calc(100% - 20px);
+    font-family: fantasy, sans-serif;
+    text-align: left;
+    color: white;
+    overflow: auto;
+    margin: 15px 10px;
+}
+
+.control-input {
+    margin-left: 100px;
+}
+
+.control-input input[type="text"] {
+
+}
+
+.control-panel label {
+    float: left;
+    width: 100px;
+}
+
+#transfer-panel {
+    position: absolute;
+    background-color: white;
+    max-height: 80%;
+    overflow-y: auto;
+    top: 30px;
+    left: 20px;
+    width: 250px;
+}
