@@ -8,7 +8,6 @@ function template(path, opt) {
         watch: true
     };
     if (typeof opt === 'object' && opt.length) {
-        options = Object.assign()
         for(let idx in opt) {
             options[idx] = opt[idx];
         }

@@ -11,14 +11,14 @@ var proxy = {
     // 待验证代理列表
     proxyVerifyList: [],
     // 缓存路径
-    cachePath: __dirname + '/cache/proxy.json',
+    cachePath: __dirname + '/../cache/proxy.json',
     // 获取待验证代理列表
     getProxyVerifyList: function() {
 
-        if (this.proxyVerifyList.length == 0) {
-            this.proxyVerifyList = this.getCache();
-            if (this.proxyVerifyList.length) return true;
-        }
+        // if (this.proxyVerifyList.length == 0) {
+        //     this.proxyVerifyList = this.getCache();
+        //     if (this.proxyVerifyList.length) return true;
+        // }
 
         let that = this;
         return new Promise(function(resolve, reject){
@@ -49,16 +49,19 @@ var proxy = {
                     if (i > 0) {
                         let ip = $(this).find('td').eq(1).html();
                         let port = $(this).find('td').eq(2).html();
-                        that.proxyVerifyList.push(ip + ':' + port);                        
+                        that.proxyVerifyList.push({
+                            ip: ip,
+                            port: port
+                        });
                     }
                 });
                 resolve(that.proxyVerifyList);
             });
         }).then(function(result){
-            console.log('getProxyVerifyList is ok');
+            console.log('获取待校验列表成功! 数量: ' + that.proxyVerifyList.length);
+            // return result;
         }).catch(function(result){
-            console.log('getProxyVerifyList is Catch: ');
-            console.log(result);
+            console.log('获取待校验列表失败:' + result);
         });
     },
     // 获取代理地址
@@ -67,63 +70,59 @@ var proxy = {
         if (!this.proxyVerifyList.length) {
             throw Error('代理列表为空, 无法继续操作');
         }
-        let random,proxy,data;
-        while (!proxy) {
-            random = parseInt(Math.floor(Math.random() * this.proxyVerifyList.length));
-            data = this.proxyVerifyList[random];
-            proxy = await this.verifyProxy(data);
-            if (!proxy) {
-                // 删除无效代理
-                this.proxyVerifyList.splice(random,1);
-                console.log('验证失败:' + data + ', 重新执行匹配');
+        // debug
+        this.proxyVerifyList = this.proxyVerifyList.slice(0, 20);
+        let that = this;
+
+        async.mapLimit(this.proxyVerifyList, 10, function(proxy, callback){
+            that.verifyProxy(proxy, callback);
+        }, function(err, result){
+            if (err) console.log('err: ' + err);
+            for (let data of result) {
+                if (data) {
+                    that.proxyList.push(data);
+                    that.saveCache();
+                }
             }
-        }
-        this.proxyList = this.proxyVerifyList;
-        this.saveCache();
-        return proxy;
+            console.log('采集完成: ' + that.proxyList.length);
+            process.exit();
+        });
+        return true;
     },
     // 校验代理地址
-    verifyProxy: function(proxy) {
+    verifyProxy: function(proxy, callback) {
         let that = this;
-        return new Promise(function(resolve, reject) {
             let options = {
                 method: 'GET',
-                url: 'http://int.dpool.sina.com.cn/iplookup/iplookup.php?format=json',
+                // url: 'http://localhost:3000/proxy/verify',
+                url: 'https://simon8.com/test.php',
                 timeout: 8000,
                 encoding: null
             };
 
-            options.proxy = `http://${proxy}`;
+            options.proxy = `http://${proxy.ip}:${proxy.port}`;
             request(options, function(err, res, body) {
                 try {
-                    body = body.toString();
-                    let response = JSON.parse(body);
-                    if (response.ret == 1) {
-                        console.log(`验证成功 ==>> ${response.country} ${response.province} ${response.city}`);
-                        resolve(options.proxy);
+                    let ip = body.toString();
+                    if (proxy.ip == ip) {
+                        console.log(`验证成功 ==>> ${ip}`);
+                        callback(null, options.proxy);
                     } else {
-                        reject('验证失败');
+                        callback(null, null);
                     }
                 } catch (e) {
-                    reject(e.message);
+                    // console.log(e.message);
+                    callback(null, null);
                 }
             });
 
-        }).then(function(result){
-            // console.log('verifyProxy is ok');
-            return result;
-        }).catch(function(result){
-            console.log('verifyProxy is Catch: ' + result);
-        });
     },
     getCache: function() {
         let cache = fs.readFileSync(this.cachePath, 'utf-8');
         return cache ? JSON.parse(cache) : [];
     },
     saveCache: function() {
-        fs.writeFile(this.cachePath, JSON.stringify(this.proxyList), function(err) {
-            if (err) throw err;
-        });
+        return fs.writeFileSync(this.cachePath, JSON.stringify(this.proxyList));
     },
     test: function() {
         
@@ -134,6 +133,5 @@ module.exports = proxy;
 // proxy.test();
 // proxy.getCache();
 // (async () => {
-//     let a = await proxy.getProxy();
-//     console.log(a);
+//     await proxy.getProxy();
 // })();

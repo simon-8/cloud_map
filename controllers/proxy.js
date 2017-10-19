@@ -1,7 +1,8 @@
-let proxy = require('../proxy2');
+let proxy = require('../include/proxy');
 
 let p_index = async function(ctx, next) {
-    ctx.response.body = 'this is index page';
+    proxy.getProxy();
+    ctx.response.body = '开始采集';
 };
 
 let p_verify = async function(ctx, next) {

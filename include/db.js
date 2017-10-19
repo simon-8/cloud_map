@@ -1,7 +1,7 @@
 let mongoose = require('mongoose');
 
 // mongoose.connection.openUri('mongodb://localhost:27017/');
-mongoose.connect('mongodb://localhost:27017/', {useMongoClient: true});
+mongoose.connect('mongodb://localhost:27017/test', {useMongoClient: true});
 
 mongoose.connection.on('connected', function() {
     console.log('MongoDB is connected!');

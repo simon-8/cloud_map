@@ -1,9 +1,17 @@
-var mongoose = require('../db');
+var mongoose = require('../include/db');
 var Schema = mongoose.Schema;
 
 var proxySchema = new Schema({
-    linkurl: {type: String},
-    title: {type: String}
+    id: String,
+    title: String,
+    url: String,
+    thumb: String,
+    price: Number,
+    area: String,
+    xiaoqu: String,
+    style: String,
+    paymentType: String,
+    room: String
 });
 
 module.exports = mongoose.model('House', proxySchema);
