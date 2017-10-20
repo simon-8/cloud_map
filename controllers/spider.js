@@ -1,6 +1,6 @@
 let proxy = require('../include/proxy');
 let spider = require('../include/spider');
-
+let spiderSchedule = require('../include/schedule');
 let House = require('../models/db.house');
 
 // 初始化数据
@@ -10,7 +10,6 @@ let p_init = async (ctx, next) => {
     ctx.response.body = '处理完成';
 };
 
-// 
 let p_index = async (ctx, next) => {
     ctx.response.body = 'This is Spider Index Page';
 };

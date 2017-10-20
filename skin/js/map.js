@@ -72,7 +72,7 @@ function loadWorkLocation() {
         if (status === 'complete' && result.info === 'OK') {
             let geocode = result.geocodes[0];
             loadWorkMarker(geocode);
-            console.log(geocode);
+            // console.log(geocode.addressComponent.district);
             loadWorkRange(geocode, takeType, takeTime);
             // loadCustomData();
             // map.setFitView();
@@ -81,7 +81,10 @@ function loadWorkLocation() {
     });
 }
 
-// 设置marker
+/**
+ * 设置marker
+ * @param {object} d 
+ */
 function loadWorkMarker(d) {
     clearMarker();
     workMarker = new AMap.Marker({
@@ -100,7 +103,12 @@ function loadWorkMarker(d) {
     });
 }
 
-// 设置公交到达圈
+/**
+ * 设置公交到达圈
+ * @param {object} geocode 
+ * @param {string} takeType 
+ * @param {int} takeTime 
+ */
 function loadWorkRange(geocode, takeType, takeTime) {
     
     var x = geocode.location.getLng();
@@ -130,19 +138,10 @@ function loadWorkRange(geocode, takeType, takeTime) {
     });
 }
 
-// 获取数据
-// function loadCustomData() {
-    
-//     $.get('/spider/getData', function(data) {
-//         for(var i in data) {
-//             addMarkerByAddress({
-//                 address: data[i], 
-//                 linkurl: i
-//             });
-//         }
-//     }, 'json');
-// }
-
+/**
+ * 根据地址创建标记点
+ * @param {object} data 
+ */
 function addMarkerByAddress(data) {
     var geocoder = new AMap.Geocoder({
         city: city,
@@ -179,7 +178,7 @@ function addMarkerByAddress(data) {
                 content: content,
                 offset: {x: 0, y: -30}
             });
-            // infoWindow.open(map, houseMarker.getPosition());
+
             houseMarker.on("click", function(e) {
                 infoWindow.open(map, houseMarker.getPosition());
             });
@@ -187,11 +186,13 @@ function addMarkerByAddress(data) {
         }
     });
     AMap.event.addListener(geocoder, 'error', function(data) {
-        console.log('兑换信息时出错');
+        console.log('查询信息时出错');
     });
 }
 
-// 显示/关闭实时路况
+/**
+ * 显示/关闭实时路况
+ */
 function toggleTraffic() {
     if (showTraffic) {
         trafficLayer.hide();
@@ -202,31 +203,53 @@ function toggleTraffic() {
     }
 }
 
-// 清除标记
+/**
+ * 清除标记
+ */
 function clearMarker() {
     if (workMarker) map.remove(workMarker);
 }
 
-// 清除圈子
+/**
+ * 清除圈子
+ */
 function clearPolygon() {
     if (polygonArray) map.remove(polygonArray);
     polygonArray = [];
 }
 
-// 清除房源标记
+/**
+ * 清除房源标记
+ */
 function clearHouseMarker() {
     if (houseMarkerArray) map.remove(houseMarkerArray);
     houseMarkerArray = [];
 }
 
-// DEBUG FUNC
+/**
+ * 清空所有数据
+ */
+function clearMap() {
+    map.clearInfoWindow();
+    clearMarker();
+    clearPolygon();
+    clearHouseMarker();
+}
+
+/**
+ * 读取自定义数据
+ * @param {int} page 
+ */
 function loadCustomData(page) {
     $.get('/spider/getData/' + page, function(res) {
         getData(res);
     }, 'json');
 }
 
-// 生成数据html
+/**
+ * 生成数据html
+ * @param {object} res 
+ */
 function getData(res) {
     let data = res.data;
     if (data.length) {
@@ -263,7 +286,10 @@ function getData(res) {
     }
 }
 
-// 生成page html
+/**
+ * 生成page html
+ * @param {int} count 
+ */
 function getPage(count) {
     let pages = '';
     let totalPage = Math.round(count/pagesize),
@@ -278,13 +304,10 @@ function getPage(count) {
     // 防止后置溢出
     if (endPage > totalPage) {
         startPage -= (endPage - totalPage);
+        startPage = startPage < 1 ? 1 : startPage;
         endPage = totalPage;
     }
-    // 防止前置溢出
-    if (startPage < 1) {
-        startPage = 1;
-    }
-    
+
     for (let i = startPage; i <= endPage; i++) {
         if (i == page) {
             pages += `<li class='current'><a>${i}</a></li>`;

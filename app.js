@@ -1,6 +1,5 @@
 let Koa = require('koa');
 let bodyParser = require('koa-bodyparser');
-let http = require('http');
 
 let controller = require('./controller');
 let template = require('./template');
