@@ -23,7 +23,7 @@ app.use(controller());
 app.use(staticFiles('/skin/', __dirname + '/skin'));
 app.listen(3000);
 
-http.get('http://localhost:3000/spider/init/10', function(res) {
-    console.log('启动抓取');
-});
+// http.get('http://localhost:3000/spider/init/10', function(res) {
+//     console.log('启动抓取');
+// });
 console.log('server is running port: 3000');

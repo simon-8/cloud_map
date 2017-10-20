@@ -1,3 +1,7 @@
+*{
+    margin: 0;
+    padding: 0;
+}
 .control-panel {
     position: absolute;
     width: 380px;
@@ -36,4 +40,69 @@
     top: 30px;
     left: 20px;
     width: 250px;
+}
+
+#panel {
+    position: absolute;
+    top: 10px;
+    left: 10px;
+    width: 300px;
+    z-index: 999;
+    background: #FFF;
+    box-shadow: 2px 2px 2px #BBB6B6;
+}
+
+#pages {
+    display: inline-block;
+    border-radius: 4px;
+    margin: 10px 0;
+}
+#pages li {
+    display: inline;
+}
+#pages li.current a {
+    color: #fff;
+    background-color: #337ab7;
+    border-color: #337ab7;
+    cursor: default;
+}
+#pages li a {
+    padding: 5px 10px;
+    font-size: 12px;
+    line-height: 1.5;
+    color: #337ab7;
+    background-color: #fff;
+    border: 1px solid #ddd;
+    text-decoration: none;
+    cursor: pointer;
+}
+
+#panel #houseList h3 {
+    margin: 5px 0;
+}
+#houseList li {
+    border-bottom: 1px solid #eaeaea;
+    /* border-left: 2px solid rgba(0,0,0,0); */
+    padding: 0px 3px;
+    list-style: none;
+    font-size: 12px;
+}
+.poi-imgbox {
+    width: 100px;
+    height: 74px;
+    float: left;
+}
+.poi-rightbox {
+    float: left;
+    margin-left: 10px;
+}
+.poi-info p {
+    margin: 3px 0;
+}
+.poi-price span.price {
+    font-weight: bold;
+    color: red;
+}
+.clear {
+    clear: both;
 }

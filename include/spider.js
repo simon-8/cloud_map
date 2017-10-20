@@ -123,11 +123,14 @@ let spider = {
             }
         });
     },
-    getData: async function() {
-
-            let data = await House.find().limit(2);
-            return data;
-
+    getData: async function(page, pagesize) {
+        let offset = (page - 1) * pagesize;
+        let data = await House.find().skip(offset).limit(pagesize);
+        let count = await House.count();
+        return {
+            count: count,
+            data: data
+        };
         // return fs.readFileSync(this.cachePath + 'data.json', 'utf-8');
     }
 };

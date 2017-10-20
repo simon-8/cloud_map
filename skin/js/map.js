@@ -72,8 +72,9 @@ function loadWorkLocation() {
         if (status === 'complete' && result.info === 'OK') {
             let geocode = result.geocodes[0];
             loadWorkMarker(geocode);
+            console.log(geocode);
             loadWorkRange(geocode, takeType, takeTime);
-            loadCustomData();
+            // loadCustomData();
             // map.setFitView();
             map.setZoomAndCenter(12, [geocode.location.getLng(), geocode.location.getLat()]);
         }
@@ -84,6 +85,7 @@ function loadWorkLocation() {
 function loadWorkMarker(d) {
     clearMarker();
     workMarker = new AMap.Marker({
+        icon: 'http://webapi.amap.com/theme/v1.3/markers/n/mark_r.png',
         map: map,
         position: [ d.location.getLng(),  d.location.getLat()]
     });
@@ -129,27 +131,25 @@ function loadWorkRange(geocode, takeType, takeTime) {
 }
 
 // 获取数据
-function loadCustomData() {
+// function loadCustomData() {
     
-    $.get('/spider/getData', function(data) {
-        for(var i in data) {
-            addMarkerByAddress({
-                address: data[i], 
-                linkurl: i
-            });
-        }
-    }, 'json');
-}
+//     $.get('/spider/getData', function(data) {
+//         for(var i in data) {
+//             addMarkerByAddress({
+//                 address: data[i], 
+//                 linkurl: i
+//             });
+//         }
+//     }, 'json');
+// }
 
 function addMarkerByAddress(data) {
     var geocoder = new AMap.Geocoder({
         city: city,
         radius: 1000
     });
-    var address = data.address.split(' | ');
-    // console.log();
-    // return false;
-    geocoder.getLocation(address[1], function(status, result) {
+
+    geocoder.getLocation(data.area + data.xiaoqu, function(status, result) {
         if (status === 'complete' && result.info === 'OK') {
             let geocode = result.geocodes[0];
             
@@ -158,8 +158,25 @@ function addMarkerByAddress(data) {
                 position: [ geocode.location.getLng(),  geocode.location.getLat()]
             });
             houseMarkerArray.push(houseMarker);
+            let content = 
+            `<div class="info-window">
+                <h3 class="poi-title">${data.title}</h3>
+                <div class="poi-imgbox">
+                    <img src="${data.thumb}" alt="" width="100%">
+                </div>
+                <div class="poi-rightbox">
+                    
+                    <div class="poi-info">
+                        <p class="poi-addr">小区: ${data.area} - ${data.xiaoqu}</p>
+                        <p class="poi-style">装修: ${data.style}</p>
+                        <p class="poi-room">房间: ${data.room}</p>
+                        <p class="poi-price">价格: <span class="price">${data.price}</span> ${data.paymentType}</p>
+                    </div>
+                </div>
+                <div class="clear">&nbsp;</div>
+            </div>`;
             var infoWindow = new AMap.InfoWindow({
-                content: data.address,
+                content: content,
                 offset: {x: 0, y: -30}
             });
             // infoWindow.open(map, houseMarker.getPosition());
@@ -202,25 +219,90 @@ function clearHouseMarker() {
     houseMarkerArray = [];
 }
 
-// loadWorkLocation();
-
 // DEBUG FUNC
-function loadCustomData1() {
-    
-    $.get('/spider/getData', function(data) {
-        // for(var i in data) {
-            // addMarkerByAddress({
-            //     address: data[i], 
-            //     linkurl: i
-            // });
-        // }
-        getPage(data);
+function loadCustomData(page) {
+    $.get('/spider/getData/' + page, function(res) {
+        getData(res);
     }, 'json');
 }
 
-function getPage(data) {
-
-    console.log(data.length);
+// 生成数据html
+function getData(res) {
+    let data = res.data;
+    if (data.length) {
+        let li = '';
+        clearHouseMarker();
+        map.clearInfoWindow();
+        for (idx in data) {
+            let id = (page - 1) * pagesize + parseInt(idx) + 1;
+            let info = data[idx];
+            info.title = info.title.replace(/\(单间出租\)|\(个人\)/g,'');
+            li += 
+            `<li>
+                <h3 class="poi-title">${info.title}</h3>
+                <div class="poi-imgbox">
+                    <img src="${info.thumb}" alt="" width="100%">
+                </div>
+                <div class="poi-rightbox">
+                    
+                    <div class="poi-info">
+                        <p class="poi-addr">小区: ${info.area} - ${info.xiaoqu}</p>
+                        <p class="poi-style">装修: ${info.style}</p>
+                        <p class="poi-room">房间: ${info.room}</p>
+                        <p class="poi-price">价格: <span class="price">${info.price}</span> ${info.paymentType}</p>
+                    </div>
+                </div>
+                <div class="clear">&nbsp;</div>
+            </li>`;
+            addMarkerByAddress(info);
+        }
+        $('#houseList').html(li);
+        getPage(res.count);
+    } else {
+        $('#houseList').html('暂无数据');
+    }
 }
 
-loadCustomData1();
+// 生成page html
+function getPage(count) {
+    let pages = '';
+    let totalPage = Math.round(count/pagesize),
+        roolpage = Math.floor(5/2),
+        startPage = page - 2,
+        endPage = page + 2;
+    // 防止前置溢出
+    if (startPage < 1) {
+        endPage += (1 - startPage);
+        startPage = 1;
+    }
+    // 防止后置溢出
+    if (endPage > totalPage) {
+        startPage -= (endPage - totalPage);
+        endPage = totalPage;
+    }
+    // 防止前置溢出
+    if (startPage < 1) {
+        startPage = 1;
+    }
+    
+    for (let i = startPage; i <= endPage; i++) {
+        if (i == page) {
+            pages += `<li class='current'><a>${i}</a></li>`;
+        } else {
+            pages += `<li><a onclick="$.pages(${i})">${i}</a></li>`;
+        }
+    }
+    if (startPage > 1) {
+        pages = `<li><a onclick="$.pages()">首页</a></li>` + pages;
+    }
+    if (endPage < totalPage) {
+        pages += `<li><a onclick="$.pages(${totalPage})">尾页</a></li>`;
+    }
+    pages += `<li><a>共${totalPage}页</a></li>`;
+    $('#pages').html(pages);
+    // if (page < totalPage) {
+        
+    // } else {
+    //     pages = '<li>已显示全部结果</li>';
+    // }
+}

@@ -17,7 +17,9 @@ let p_index = async (ctx, next) => {
 
 // 返回数据
 let p_getData = async (ctx, next) => {
-    ctx.response.body = await spider.getData();
+    let page = ctx.params.page,
+        pagesize = 6;
+    ctx.response.body = await spider.getData(page, pagesize);
 };
 
 // let p_getPageData = async (ctx, next) => {
@@ -28,6 +30,7 @@ let p_getData = async (ctx, next) => {
 module.exports = {
     'GET /spider/init/:number': p_init,
     'GET /spider/': p_index,
-    'GET /spider/getData': p_getData,
+    // 'GET /spider/getData/:page': p_getData,
+    'GET /spider/getData/:page': p_getData,
     // 'GET /spider/getPage/:number': p_getPageData 
 };
