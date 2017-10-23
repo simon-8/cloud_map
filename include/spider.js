@@ -3,6 +3,7 @@ let cheerio = require('cheerio');
 let fs = require('fs');
 let async = require('async');
 let House = require('../models/db.house');
+let moment = require('moment');
 
 let spider = {
     baseUrl: 'http://hz.58.com/xihuqu/chuzu/0/?minprice=1000_2000&PGTID=0d3090a7-0005-521c-9666-544119741a06&ClickID=2',
@@ -108,6 +109,7 @@ let spider = {
                 data.style = $('.house-basic-desc .f14 li').eq(1).find('.c_888.mr_15+span').text().replace(/\s/g,"");
                 data.paymentType = $('.house-pay-way .c_333').text();
                 data.room = $('.house-basic-desc .f14 li').eq(0).find('.c_888.mr_15+span').text();
+                data.addtime = moment().format('YYYY-MM-DD h:mm:ss');
                 // let house = new House(data);
                 House.findOneAndUpdate({id: data.id}, data, {upsert: true}, function(err, doc, res){
                     if (doc) {

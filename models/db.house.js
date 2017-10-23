@@ -11,7 +11,8 @@ var proxySchema = new Schema({
     xiaoqu: String,
     style: String,
     paymentType: String,
-    room: String
+    room: String,
+    addtime: String
 });
 
 module.exports = mongoose.model('House', proxySchema);

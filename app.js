@@ -4,7 +4,7 @@ let bodyParser = require('koa-bodyparser');
 let controller = require('./controller');
 let template = require('./template');
 let staticFiles = require('./static-files');
-
+let schedule = require('./include/schedule');
 let app = new Koa();
 
 app.use(bodyParser());
@@ -25,4 +25,5 @@ app.listen(3000);
 // http.get('http://localhost:3000/spider/init/10', function(res) {
 //     console.log('启动抓取');
 // });
+schedule.spiderSchedule();
 console.log('server is running port: 3000');

@@ -1,6 +1,5 @@
 let proxy = require('../include/proxy');
 let spider = require('../include/spider');
-let spiderSchedule = require('../include/schedule');
 let House = require('../models/db.house');
 
 // 初始化数据
@@ -20,11 +19,6 @@ let p_getData = async (ctx, next) => {
         pagesize = 6;
     ctx.response.body = await spider.getData(page, pagesize);
 };
-
-// let p_getPageData = async (ctx, next) => {
-//     let page = ctx.params.page ? parseInt(ctx.params.page) : 1;
-    
-// };
 
 module.exports = {
     'GET /spider/init/:number': p_init,

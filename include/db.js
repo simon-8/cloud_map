@@ -14,5 +14,6 @@ mongoose.connection.on('error', function(err) {
 mongoose.connection.on('disconnected', function() {
     console.log('MongoDB is disconnected!');
 });
+// 使用node原生promise
 mongoose.Promise = global.Promise;
 module.exports = mongoose;
